@@ -1037,6 +1037,23 @@ input {
   display: flex;
   gap: 129px;
 }
+
+@media screen and (max-width: 1280px) {
+  .main-form {
+    padding: 60px 40px 140px 40px;
+    gap: 200px;
+  }
+
+  .main-form__image {
+    width: 200%;
+  }
+
+  .main-form__image img {
+    width: 100%;
+  }
+}
+
+
 @media screen and (max-width: 1180px) {
   .main-form {
     padding: 60px 30px 140px 30px;
