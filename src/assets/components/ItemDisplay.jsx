@@ -1,4 +1,6 @@
+import React, { useState } from "react";
 import PropTypes from "prop-types";
+import { useCart } from "./CartContext";
 import heart from "/assets/icons/heart.svg";
 import eye from "/assets/icons/eye.svg";
 import five from "/assets/icons/five-star.svg";
@@ -25,34 +27,42 @@ const ItemDisplay = ({
   addToCartButton,
   noShowRating,
 }) => {
+  const { addToCart } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const handleAddToCart = () => {
+    addToCart({
+      label,
+      price: parseFloat(price),
+      product,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500); // show "Added!" for 1.5 seconds
+  };
+
   return (
     <div className="image-display w-100 min-w-270px">
       <div className="image-display__header h-250px">
         {percent === "new" ? (
-          <div className="badge badge-green">
-            <span>New</span>
-          </div>
-        ) : !percent ? (
-          <></>
-        ) : (
-          <div className="badge badge-reddish-brown">
-            <span>-{percent}%</span>
-          </div>
-        )}
-        <img src={product} alt="" />
+          <div className="badge badge-green"><span>New</span></div>
+        ) : percent ? (
+          <div className="badge badge-reddish-brown"><span>-{percent}%</span></div>
+        ) : null}
+
+        <img src={product} alt={label} />
         <div className="menu-options">
-          {showHeart ? <img src={heart} alt="" /> : <></>}
-          {!showTrash ? <img src={eye} alt="" /> : <></>}
-          {showTrash ? <img src={trash} alt="" /> : <></>}
+          {showHeart && <img src={heart} alt="heart" />}
+          {!showTrash && <img src={eye} alt="view" />}
+          {showTrash && <img src={trash} alt="trash" />}
         </div>
-        {addToCartButton ? (
-          <button className="add-to-cart">
-            <p>Add To Cart</p>
+
+        {addToCartButton && (
+          <button className="add-to-cart" onClick={handleAddToCart}>
+            <p>{added ? "Added" : "Add To Cart"}</p>
           </button>
-        ) : (
-          <></>
         )}
       </div>
+
       <div className="image-display__footer">
         <p className="image-display__footer--label">{label}</p>
 
@@ -60,27 +70,13 @@ const ItemDisplay = ({
           <>
             <p>
               <span className="image-display__footer--price">${price}</span>
-              {discount ? (
-                <span className="image-display__footer--discount">
-                  ${discount}
-                </span>
-              ) : (
-                <></>
-              )}
+              <span className="image-display__footer--discount">
+                ${discount}
+              </span>
             </p>
-            {noShowRating ? (
-              <></>
-            ) : (
+            {!noShowRating && (
               <div className="image-display__footer--star-rating">
-                {starRating === "three" ? (
-                  <img src={three} alt="" />
-                ) : starRating === "four" ? (
-                  <img src={four} alt="" />
-                ) : starRating === "four-and-half" ? (
-                  <img src={fourHalf} alt="" />
-                ) : (
-                  <img src={five} alt="" />
-                )}
+                {renderStars(starRating)}
                 <span className="image-display__footer--votes">({votes})</span>
               </div>
             )}
@@ -89,49 +85,47 @@ const ItemDisplay = ({
           <>
             <div className="div-flex">
               <span className="image-display__footer--price">${price}</span>
-              {noShowRating ? (
-                <></>
-              ) : (
+              {!noShowRating && (
                 <div className="image-display__footer--star-rating">
-                  {starRating === "three" ? (
-                    <img src={three} alt="" />
-                  ) : starRating === "four" ? (
-                    <img src={four} alt="" />
-                  ) : starRating === "four-and-half" ? (
-                    <img src={fourHalf} alt="" />
-                  ) : (
-                    <img src={five} alt="" />
-                  )}
-                  <span className="image-display__footer--votes">
-                    ({votes})
-                  </span>
+                  {renderStars(starRating)}
+                  <span className="image-display__footer--votes">({votes})</span>
                 </div>
               )}
             </div>
-            {colourSet === "1" ? (
-              <div>
-                <img src={colour1} alt="" />
-              </div>
-            ) : colourSet === "2" ? (
-              <div>
-                <img src={colour2} alt="" />
-              </div>
-            ) : colourSet === "3" ? (
-              <div>
-                <img src={colour3} alt="" />
-              </div>
-            ) : colourSet === "4" ? (
-              <div>
-                <img src={colour4} alt="" />
-              </div>
-            ) : (
-              <></>
-            )}
+            {renderColourSet(colourSet)}
           </>
         )}
       </div>
     </div>
   );
+};
+
+const renderStars = (rating) => {
+  switch (rating) {
+    case "three":
+      return <img src={three} alt="3 stars" />;
+    case "four":
+      return <img src={four} alt="4 stars" />;
+    case "four-and-half":
+      return <img src={fourHalf} alt="4.5 stars" />;
+    default:
+      return <img src={five} alt="5 stars" />;
+  }
+};
+
+const renderColourSet = (set) => {
+  switch (set) {
+    case "1":
+      return <img src={colour1} alt="color 1" />;
+    case "2":
+      return <img src={colour2} alt="color 2" />;
+    case "3":
+      return <img src={colour3} alt="color 3" />;
+    case "4":
+      return <img src={colour4} alt="color 4" />;
+    default:
+      return null;
+  }
 };
 
 ItemDisplay.propTypes = {
@@ -144,6 +138,9 @@ ItemDisplay.propTypes = {
   addToCartButton: PropTypes.bool,
   product: PropTypes.any,
   colourSet: PropTypes.string,
+  showHeart: PropTypes.bool,
+  showTrash: PropTypes.bool,
+  noShowRating: PropTypes.bool,
 };
 
 export default ItemDisplay;

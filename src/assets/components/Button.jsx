@@ -1,16 +1,17 @@
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
-const Button = ({children, buttonColour}) => {
+const Button = ({ children, buttonColour, onClick }) => {
   return (
-    <button className={`${buttonColour} button`}>
+    <button className={`${buttonColour} button`} onClick={onClick}>
       {children}
     </button>
-  )
-}
+  );
+};
 
 Button.propTypes = {
-    children: PropTypes.string,
-    buttonColour: PropTypes.string,
-}
+  children: PropTypes.node,
+  buttonColour: PropTypes.string,
+  onClick: PropTypes.func,
+};
 
-export default Button
+export default Button;
